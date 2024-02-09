@@ -1,3 +1,4 @@
+import ApiError from '../exceptions/ApiError.js';
 import Token from '../models/Token.js';
 import JWT from 'jsonwebtoken';
 
@@ -39,7 +40,7 @@ class TokenService {
     async logout(refreshToken) {
         const tokenRecord = await Token.findOneAndDelete({ token: refreshToken });
         if (!tokenRecord) {
-            throw new ApiError('refreshToken not found');
+            throw ApiError.badRequest('refreshToken not found');
         }
     }
 }

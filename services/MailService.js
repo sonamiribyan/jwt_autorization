@@ -7,15 +7,15 @@ class MailService {
             port: process.env.MAIL_PORT,
             secure: false,
             auth: {
-                user: process.env.MAIL_USERNAME, // Corrected variable name
-                pass: process.env.MAIL_PASSWORD // Corrected variable name
+                user: process.env.MAIL_USERNAME,
+                pass: process.env.MAIL_PASSWORD
             }
         });
     }
 
     async sendActivationEmail(to, link) {
         await this.transporter.sendMail({
-            from: process.env.MAIL_USERNAME, // Corrected variable name
+            from: process.env.MAIL_USERNAME,
             to,
             subject: 'Activation',
             text: '',

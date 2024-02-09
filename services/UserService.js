@@ -19,11 +19,11 @@ class UserService {
                 };
             }
             else {
-                throw new ApiError(400, 'Invalid email or password');
+                throw ApiError.badRequest('Invalid email or password');
             }
         }
         else {
-            throw new ApiError(400, 'Invalid email or password');
+            throw ApiError.badRequest('Invalid email or password');
         }
     }
     async register(email, password) {
@@ -52,7 +52,7 @@ class UserService {
         return users;
     }
     async activate() {
-
+        //TODO
     }
 }
 
