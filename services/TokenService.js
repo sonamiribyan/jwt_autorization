@@ -1,7 +1,8 @@
 import ApiError from '../exceptions/ApiError.js';
 import Token from '../models/Token.js';
 import JWT from 'jsonwebtoken';
-
+import User from '../models/User.js';
+import UserDto from '../DTOs/UserDto.js';
 
 class TokenService {
     generateTokens(payload) {
@@ -28,13 +29,39 @@ class TokenService {
     }
 
     async refresh(refreshToken) {
+        if (!refreshToken) {
+            throw ApiError.unautorizedError('unauthorizedError');
+        }
+        const userData = await this.validateRefreshToken(refreshToken);
+        const token = await this.getTokenFromDatabase(refreshToken);
+        console.log(token, userData);
+        if (!token || !userData) {
+            throw ApiError.unauthorizedError('unauthorizedError'); // Assuming unautorizedError() is a method for creating an unauthorized error
+        }
+        const userId = userData?._doc?._id || (userData.email && userData.email._id);
 
+        const user = await User.findById(userId);
+
+        const userDto = new UserDto(user);
+        const tokens = this.generateTokens({ ...userDto });
+        await this.saveTokensToDatabase(user.id, tokens.refreshToken);
+        return { ...tokens, user: userDto }
     }
-    async validateAccesToken(accessToken) {
-
+     validateAccesToken(accessToken) {
+        try {
+            const user = JWT.verify(accessToken, process.env.JWT_ACCESS_KEY)
+            return user;
+        } catch (error) {
+            return null;
+        }
     }
     async validateRefreshToken(refreshToken) {
-
+        try {
+            const user = JWT.verify(refreshToken, process.env.JWT_REFRESH_KEY)
+            return user;
+        } catch (error) {
+            return null;
+        }
     }
 
     async logout(refreshToken) {
@@ -42,6 +69,10 @@ class TokenService {
         if (!tokenRecord) {
             throw ApiError.badRequest('refreshToken not found');
         }
+    }
+    async getTokenFromDatabase(refreshToken) {
+        const token = await Token.findOne({ token: refreshToken }).exec();
+        return token;
     }
 }
 

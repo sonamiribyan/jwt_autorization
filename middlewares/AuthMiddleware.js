@@ -1,23 +1,27 @@
-import ApiError from "../exceptions/ApiError";
-import tokenService from "../services/TokenService";
+import ApiError from "../exceptions/ApiError.js";
+import tokenService from "../services/TokenService.js";
 export default function (req, res, next) {
     try {
-        const autentificationHeader = req.headers.autorization;
+        const autentificationHeader = req.headers.authorization;
         if (!autentificationHeader) {
-            return next(ApiError(401, 'anauthenticated error'));
+            return next(ApiError.unauthorizedError());
         }
-        const accessToken = autentificationHeader.split(' ')[1];
+        const accessToken = autentificationHeader.split(' ')[2];
         if (!accessToken) {
-            return next(ApiError(401, 'anauthenticated error'));
+
+            return next(ApiError.unauthorizedError());
         }
-        const userData = tokenService.validateAccesToken(accessToken);
+
+        const userData = tokenService.validateAccesToken(accessToken); // Await the result
         if (!userData) {
-            return next(ApiError(401, 'anauthenticated error'));
+            console.log(333);
+
+            return next(ApiError.unauthorizedError());
         }
         req.user = userData;
         next();
     }
     catch (e) {
-        return next(ApiError(401, 'anauthenticated error'));
+        return next(ApiError.unauthorizedError());
     }
 }
