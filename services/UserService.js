@@ -39,7 +39,7 @@ class UserService {
         const userData = await User.create({ email, password: hashPassword, activationLink });
         const tokens = tokenService.generateTokens({ ...userData });
         await tokenService.saveTokensToDatabase(userData.id, tokens.refreshToken);
-        await mailService.sendActivationEmail(userData.email, `${process.env.API_URL}/api/activate/activationLink`);
+        // await mailService.sendActivationEmail(userData.email, `${process.env.API_URL}/api/activate/activationLink`);
         return {
             user: new UserDto(userData.email, userData.password, userData.activationLink),
             tokens
@@ -51,8 +51,14 @@ class UserService {
         const users = User.find();
         return users;
     }
-    async activate() {
-        //TODO
+    async activate(link) {
+        const user = await User.findOne({ activateLink: link }).exec();
+        if (!user) {
+            throw ApiError.badRequest('invalid token');
+        }
+        user.isActivated = true;
+        await user.save();
+        return user;
     }
 }
 

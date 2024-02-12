@@ -43,27 +43,31 @@ class UserController {
     async refresh(req, res, next) {
         try {
             const { refreshToken } = req.cookies;
-            const tokens = await TokenService.refresh(refreshToken);
-            res.json(tokens);
-
+            const data = await TokenService.refresh(refreshToken);
+            res.cookie('refreshToken', data.refreshToken, {
+                httpOnly: true,
+                maxAge: 30 * 24 * 60 * 60 * 1000,
+            });
+            res.json({ success: true, data });
         } catch (error) {
             next(error);
         }
     }
-    async all(_, res) {
+    async all(_, res, next) {
         try {
             const users = await UserService.all();
             res.json({ users });
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
-    async activate(req, res) {
+    async activate(req, res, next) {
         try {
-            res.json({ success: true });
-
+            const { activationLink } = req.params;
+            await UserService.activate(activationLink);
+            res.redirect(process.env.WEB_URL);
         } catch (error) {
-            console.log(error);
+            next(error);
         }
     }
 }

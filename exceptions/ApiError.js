@@ -9,6 +9,9 @@ class ApiError extends Error {
     static badRequest(message = 'Bad Request') {
         return new ApiError(message, 400);
     }
+    static unauthorizedError(message = 'unautorizedError') {
+        return new ApiError(message, 401);
+    }
 }
 
 export default ApiError;
