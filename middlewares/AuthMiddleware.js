@@ -14,7 +14,6 @@ export default function (req, res, next) {
 
         const userData = tokenService.validateAccesToken(accessToken); // Await the result
         if (!userData) {
-            console.log(333);
 
             return next(ApiError.unauthorizedError());
         }

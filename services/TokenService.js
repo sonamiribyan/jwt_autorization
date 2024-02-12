@@ -16,7 +16,6 @@ class TokenService {
 
     async saveTokensToDatabase(user_id, refreshToken) {
         let existingToken = await Token.findOne({ user_id }).exec();
-        console.log(existingToken);
         if (existingToken) {
             existingToken.token = refreshToken;
             await existingToken.save();
@@ -34,7 +33,6 @@ class TokenService {
         }
         const userData = await this.validateRefreshToken(refreshToken);
         const token = await this.getTokenFromDatabase(refreshToken);
-        console.log(token, userData);
         if (!token || !userData) {
             throw ApiError.unauthorizedError('unauthorizedError'); // Assuming unautorizedError() is a method for creating an unauthorized error
         }
