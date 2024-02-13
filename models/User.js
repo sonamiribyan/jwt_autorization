@@ -18,6 +18,11 @@ const UserSchema = new Schema({
     activationLink: {
         type: String,
     },
+    avatar: {
+        type: String,
+        required: false,
+        default: null
+    },
 });
 
 

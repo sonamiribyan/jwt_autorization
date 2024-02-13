@@ -17,6 +17,7 @@ class UserController {
     async register(req, res, next) {
         try {
             const { email, password } = req.body;
+            // const {avatar} = req.files;
             const result = await UserService.register(email, password);
             res.cookie('refreshToken', result.tokens.refreshToken, {
                 httpOnly: true,

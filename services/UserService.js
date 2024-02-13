@@ -5,6 +5,7 @@ import UserDto from '../DTOs/UserDto.js';
 import tokenService from './TokenService.js';
 import ApiError from '../exceptions/ApiError.js';
 import mailService from './MailService.js';
+import FileUpload from '../utils/FileUpload.js';
 class UserService {
     async login(email, password) {
         const user = await User.findOne({ email }).exec();
@@ -26,14 +27,14 @@ class UserService {
             throw ApiError.badRequest('Invalid email or password');
         }
     }
-    async register(email, password) {
+    async register(email, password, avatar = null) {
         const credential = await User.findOne({ email }).exec();
         if (credential) {
             if (credential) {
                 throw ApiError.badRequest('User already registered');
             }
         }
-
+        // await FileUpload.upload(avatar);
         const hashPassword = bcrypt.hashSync(password, 10);
         const activationLink = uuid.v4();
         const userData = await User.create({ email, password: hashPassword, activationLink });
