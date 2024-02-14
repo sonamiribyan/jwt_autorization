@@ -29,7 +29,7 @@ class TokenService {
 
     async refresh(refreshToken) {
         if (!refreshToken) {
-            throw ApiError.unautorizedError('unauthorizedError');
+            throw ApiError.unauthorizedError('unauthorizedError');
         }
         const userData = await this.validateRefreshToken(refreshToken);
         const token = await this.getTokenFromDatabase(refreshToken);
@@ -45,7 +45,7 @@ class TokenService {
         await this.saveTokensToDatabase(user.id, tokens.refreshToken);
         return { ...tokens, user: userDto }
     }
-     validateAccesToken(accessToken) {
+    validateAccesToken(accessToken) {
         try {
             const user = JWT.verify(accessToken, process.env.JWT_ACCESS_KEY)
             return user;
